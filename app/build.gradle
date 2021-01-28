@@ -1,17 +1,22 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "30.0.2"
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
 
     defaultConfig {
-        applicationId "com.ziroom.mymvvm"
-        minSdkVersion 16
-        targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        applicationId rootProject.ext.android.applicationId
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode rootProject.ext.android.versionCode
+        versionName rootProject.ext.android.versionName
+    }
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    dataBinding {
+        enabled true
     }
 
     buildTypes {
@@ -20,14 +25,39 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    // 优化编译速度
+    // 优化`transformClassDexBuilderForDebug`的速度
+    dexOptions {
+        preDexLibraries true
+        maxProcessCount 8
+    }
 }
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-
+    //MVVM
+    implementation project(path: ':mvvm')
+    //第三方
+    implementation rootProject.ext.dependencies.banner
+    implementation rootProject.ext.dependencies['bottom-tab']
+    implementation rootProject.ext.dependencies.swiperefresh
+    //列表万能适配器
+    implementation rootProject.ext.dependencies.BRVAH
+    implementation rootProject.ext.dependencies.bdclta
+    implementation rootProject.ext.dependencies['bdclta-rv']
+    //Room 数据库
+    api rootProject.ext.room["room-runtime"]
+    api rootProject.ext.room["room-ktx"]
+    kapt rootProject.ext.room["room-compiler"]
+    testImplementation rootProject.ext.room["room-testing"]
 }
